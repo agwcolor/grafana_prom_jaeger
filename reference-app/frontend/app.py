@@ -49,7 +49,7 @@ def init_tracer(service):
     # this call also sets opentracing.tracer
     return config.initialize_tracer()
 
-tracer = init_tracer('frontend-service')
+tracer = init_tracer('frontend')
 
 @app.route('/')
 def homepage():

@@ -31,19 +31,19 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: frontend-service
+  name: frontend
 spec:
   selector:
     app: frontend
   ports:
     - port: 8083
-      targetPort: 8080
+      targetPort: frontendport
   type: LoadBalancer
 ---
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: frontend
+  name: frontendport
   namespace: monitoring
   labels:
     app: frontend
@@ -53,7 +53,7 @@ spec:
     matchLabels:
       app: frontend
   endpoints:
-  - port: frontendport
+  - port: frontend
     path: /metrics
     interval: 15s
   namespaceSelector:

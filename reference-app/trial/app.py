@@ -1,4 +1,4 @@
-import logging
+import logging, requests
 from flask import Flask, render_template, request, jsonify
 
 from jaeger_client import Config
@@ -58,7 +58,7 @@ def init_tracer(service):
     # this call also sets opentracing.tracer
     return config.initialize_tracer()
 
-tracer = init_tracer('first-service')
+tracer = init_tracer('trial')
 
 @app.route('/')
 def homepage():

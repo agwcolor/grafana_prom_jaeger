@@ -31,13 +31,13 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: trial-service
+  name: trial
 spec:
   selector:
     app: trial
   ports:
     - port: 8082
-      targetPort: 8080
+      targetPort: trialport
   type: LoadBalancer
 ---
 apiVersion: monitoring.coreos.com/v1
@@ -53,7 +53,7 @@ spec:
     matchLabels:
       app: trial
   endpoints:
-  - port: trialport
+  - port: trial
     path: /metrics
     interval: 15s
   namespaceSelector:

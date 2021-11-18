@@ -66,7 +66,7 @@ def init_tracer(service):
     # this call also sets opentracing.tracer
     return config.initialize_tracer()
 
-tracer = init_tracer('backend-service')
+tracer = init_tracer('backend')
 
 
 @app.route('/')

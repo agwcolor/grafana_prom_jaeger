@@ -31,13 +31,13 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: backend-service
+  name: backend
 spec:
   selector:
     app: backend
   ports:
     - port: 8081
-      targetPort: 8080
+      targetPort: backendport
   type: LoadBalancer
 ---
 apiVersion: monitoring.coreos.com/v1
@@ -53,7 +53,7 @@ spec:
     matchLabels:
       app: backend
   endpoints:
-  - port: backendport
+  - port: backend
     path: /metrics
     interval: 15s
   namespaceSelector:
