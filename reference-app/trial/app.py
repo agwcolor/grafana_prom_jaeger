@@ -27,8 +27,8 @@ app = Flask(__name__)
 FlaskInstrumentor().instrument_app(app)
 RequestsInstrumentor().instrument()
 # add this missing from starter code
-metrics = PrometheusMetrics(app)
-metrics.info("app_info", "Application info", version="1.0.3")
+metrics = PrometheusMetrics(app, group_by='endpoint')
+metrics.info("trial_app_info", "Trial App Prometheus Metrics", version="1.0.3")
 
 
 
@@ -62,7 +62,7 @@ tracer = init_tracer('first-service')
 
 @app.route('/')
 def homepage():
-    return render_template("main.html")
+    # return render_template("main.html")
     with tracer.start_span('get-python-jobs') as span:
         homepages = []
         res = requests.get('https://jobs.github.com/positions.json?description=python')
@@ -72,9 +72,6 @@ def homepage():
                 homepages.append(requests.get(result['company_url']))
             except:
                 return "Unable to get site for %s" % result['company']
-        
-
-
     return jsonify(homepages)
 
 if __name__ == "__main__":
