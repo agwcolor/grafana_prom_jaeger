@@ -25,7 +25,7 @@ spec:
         image: agwcolor/monitoring-backend:latest
         ports:
         - name: backendport
-          containerPort: 8081
+          containerPort: 8080
           protocol: TCP
 ---
 apiVersion: v1

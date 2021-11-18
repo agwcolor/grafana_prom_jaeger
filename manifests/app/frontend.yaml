@@ -36,6 +36,6 @@ spec:
   selector:
     app: frontend
   ports:
-    - port: 8080
+    - port: 8083
       targetPort: 8080
   type: LoadBalancer
