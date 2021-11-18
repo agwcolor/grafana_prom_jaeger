@@ -1,11 +1,17 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: backend-app
+  name: backend
   annotations:
     "sidecar.jaegertracing.io/inject": "true"
+    prometheus.io/scrape: "true"
+    prometheus.io/path: /metrics
+    prometheus.io/port: backendport
+  labels:
+    name: backend
+    release: prometheus
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: backend
@@ -18,7 +24,9 @@ spec:
       - name: backend
         image: agwcolor/monitoring-backend:latest
         ports:
-        - containerPort: 8081
+        - name: backendport
+          containerPort: 8081
+          protocol: TCP
 ---
 apiVersion: v1
 kind: Service
