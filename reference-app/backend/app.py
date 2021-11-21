@@ -6,7 +6,11 @@ from flask_pymongo import PyMongo
 
 from prometheus_flask_exporter import PrometheusMetrics
 
+# https://github.com/rycus86/prometheus_flask_exporter/blob/master/examples/gunicorn-internal/config.py
 from prometheus_flask_exporter.multiprocess import GunicornInternalPrometheusMetrics
+
+def child_exit(server, worker):
+    GunicornInternalPrometheusMetrics.mark_process_dead_on_child_exit(worker.pid)
 
 # Tracing
 from jaeger_client import Config
@@ -23,6 +27,11 @@ from opentelemetry.sdk.trace.export import (
     SimpleExportSpanProcessor,
 )
 
+# from prometheus_flask_exporter import PrometheusMetrics
+# Since we're using gunicorn, use this - https://github.com/rycus86/prometheus_flask_exporter/blob/master/examples/gunicorn-internal/requirements.txt
+from prometheus_flask_exporter.multiprocess import GunicornInternalPrometheusMetrics
+
+
 trace.set_tracer_provider(TracerProvider())
 trace.get_tracer_provider().add_span_processor(
     SimpleExportSpanProcessor(ConsoleSpanExporter())
@@ -36,8 +45,8 @@ app = Flask(__name__)
 FlaskInstrumentor().instrument_app(app)
 RequestsInstrumentor().instrument()
 
-metrics = PrometheusMetrics(app, group_by='endpoint')
-# metrics = GunicornInternalPrometheusMetrics(app)
+# metrics = PrometheusMetrics(app, group_by='endpoint')
+metrics = GunicornInternalPrometheusMetrics(app)
 
 # static information as metric
 metrics.info('backend_app_info', 'Backend App Prometheus Metrics', version='1.0.3')

@@ -14,8 +14,9 @@ from opentelemetry.sdk.trace.export import (
     SimpleExportSpanProcessor,
 )
 
-from prometheus_flask_exporter import PrometheusMetrics
-
+# from prometheus_flask_exporter import PrometheusMetrics
+# Since we're using gunicorn, use this - https://github.com/rycus86/prometheus_flask_exporter/blob/master/examples/gunicorn-internal/requirements.txt
+from prometheus_flask_exporter.multiprocess import GunicornInternalPrometheusMetrics
 
 trace.set_tracer_provider(TracerProvider())
 trace.get_tracer_provider().add_span_processor(
@@ -28,8 +29,8 @@ app = Flask(__name__)
 FlaskInstrumentor().instrument_app(app)
 RequestsInstrumentor().instrument()
 # add this missing from starter code
-metrics = PrometheusMetrics(app, group_by='endpoint')
-metrics.info("frontend_app_info", "Frontend App Prometheus Metrics", version="1.0.3")
+metrics = GunicornInternalPrometheusMetrics(app, group_by='endpoint')
+# metrics.info("frontend_app_info", "Frontend App Prometheus Metrics", version="1.0.3")
 
 def init_tracer(service):
     logging.getLogger('').handlers = []
