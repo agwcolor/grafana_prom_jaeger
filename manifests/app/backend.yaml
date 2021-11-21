@@ -21,12 +21,16 @@ spec:
         app: backend
     spec:
       containers:
-      - name: backend
-        image: agwcolor/monitoring-backend:latest
-        ports:
-        - name: backendport
-          containerPort: 8080
-          protocol: TCP
+        - name: backend
+          image: agwcolor/monitoring-backend:latest
+          imagePullPolicy: Always
+          env:
+          - name: JAEGER_HOST
+            value: simplest-query.default.svc.cluster.local:16686
+          ports:
+          - name: backendport
+            containerPort: 8080
+            protocol: TCP
 ---
 apiVersion: v1
 kind: Service

@@ -7,8 +7,8 @@ ENV APP_HOME /app
 WORKDIR $APP_HOME
 COPY . ./
 
-ENV PROMETHEUS_MULTIPROC_DIR /tmp
-ENV prometheus_multiproc_dir /tmp
+ENV PROMETHEUS_MULTIPROC_DIR /tmp/PROMETHEUS_MULTIPROC_DIR
+RUN mkdir -p /tmp/PROMETHEUS_MULTIPROC_DIR && chmod a+rwx -R /tmp/PROMETHEUS_MULTIPROC_DIR
 
 # Install production dependencies.
 RUN apt-get update && \

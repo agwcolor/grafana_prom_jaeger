@@ -21,12 +21,16 @@ spec:
         app: trial
     spec:
       containers:
-      - name: trial
-        image: agwcolor/monitoring-trial:latest
-        ports:
-        - name: trialport
-          containerPort: 8080
-          protocol: TCP
+        - name: trial
+          image: agwcolor/monitoring-trial:latest
+          imagePullPolicy: Always
+          env:
+          - name: JAEGER_HOST
+            value: simplest-query.default.svc.cluster.local:16686
+          ports:
+          - name: trialport
+            containerPort: 8080
+            protocol: TCP
 ---
 apiVersion: v1
 kind: Service

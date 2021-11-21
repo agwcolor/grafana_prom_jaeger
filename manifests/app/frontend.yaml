@@ -23,6 +23,7 @@ spec:
       containers:
       - name: frontend
         image: agwcolor/monitoring-frontend:latest
+        imagePullPolicy: Always
         ports:
         - name: frontendport
           containerPort: 8080
