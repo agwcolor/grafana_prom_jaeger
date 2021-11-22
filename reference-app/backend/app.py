@@ -1,17 +1,15 @@
 from flask import Flask, render_template, request, jsonify
-
+from flask_cors import CORS
+import os
 import pymongo
 import logging
 from flask_pymongo import PyMongo
-
-# https://github.com/rycus86/prometheus_flask_exporter/blob/master/examples/gunicorn-internal/config.py
-from prometheus_flask_exporter.multiprocess import GunicornInternalPrometheusMetrics
-
-
 # Tracing
 from jaeger_client import Config
+from jaeger_client.metrics.prometheus import PrometheusMetricsFactory
 
 from opentelemetry import trace
+
 from opentelemetry.exporter.jaeger.thrift import JaegerExporter
 from opentelemetry.sdk.resources import SERVICE_NAME, Resource
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
@@ -24,7 +22,7 @@ from opentelemetry.sdk.trace.export import ConsoleSpanExporter
 # from prometheus_flask_exporter import PrometheusMetrics
 # Since we're using gunicorn - https://github.com/rycus86/prometheus_flask_exporter/blob/master/examples/gunicorn-internal
 from prometheus_flask_exporter.multiprocess import GunicornInternalPrometheusMetrics
-
+from prometheus_flask_exporter import PrometheusMetrics
 
 # Jaeger Tracing Config
 '''
@@ -41,23 +39,6 @@ trace.get_tracer_provider().add_span_processor(
 tracer = trace.get_tracer(__name__)
 '''
 
-# Backend app
-app = Flask(__name__)
-
-FlaskInstrumentor().instrument_app(app, excluded_urls="metrics")
-RequestsInstrumentor().instrument()
-
-# metrics = PrometheusMetrics(app, group_by='endpoint')
-metrics = GunicornInternalPrometheusMetrics(app)
-# static information as metric
-# metrics.info('backend_app_info', 'Backend App Prometheus Metrics', version='1.0.3')
-
-app.config['MONGO_DBNAME'] = 'example-mongodb'
-app.config['MONGO_URI'] = 'mongodb://example-mongodb-svc.default.svc.cluster.local:27017/example-mongodb'
-
-mongo = PyMongo(app)
-
-
 # Another way to configure a tracer
 def init_tracer(service):
     logging.getLogger('').handlers = []
@@ -72,6 +53,7 @@ def init_tracer(service):
             'logging': True,
         },
         service_name=service,
+        validate=True
     )
 
     # this call also sets opentracing.tracer
@@ -79,7 +61,32 @@ def init_tracer(service):
 
 tracer = init_tracer('backend')
 
+# Backend app
+app = Flask(__name__)
+CORS(app)
+
+# FlaskInstrumentor().instrument_app(app, excluded_urls="metrics")
+# RequestsInstrumentor().instrument()
+
+metrics = GunicornInternalPrometheusMetrics(app, group_by='endpoint')
+# metrics = PrometheusMetrics(app, group_by='endpoint')
+
+# static information as metric
+metrics.info('backend', 'Backend App Metrics', version='1.0.3')
+
+# custom metric to be applied to multiple endpoints
+endpoint_counter = metrics.counter(
+    'by_endpoint_counter', 'Request count by endpoints',
+    labels={'endpoint': lambda: request.endpoint}
+)
+
+app.config['MONGO_DBNAME'] = 'example-mongodb'
+app.config['MONGO_URI'] = 'mongodb://example-mongodb-svc.default.svc.cluster.local:27017/example-mongodb'
+
+mongo = PyMongo(app)
+
 @app.route('/')
+@endpoint_counter
 def homepage():
     with tracer.start_active_span('home-page'):
         answer = "I'm on the home page"

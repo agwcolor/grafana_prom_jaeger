@@ -1,4 +1,5 @@
 Flask==1.1.2
+flask_cors
 requests==2.23.0
 pylint==2.4.0
 gunicorn==20.0.4
