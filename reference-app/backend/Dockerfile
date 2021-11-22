@@ -7,9 +7,8 @@ ENV APP_HOME /app
 WORKDIR $APP_HOME
 COPY . ./
 
-ENV PROMETHEUS_MULTIPROC_DIR /tmp/PROMETHEUS_MULTIPROC_DIR
-RUN mkdir -p /tmp/PROMETHEUS_MULTIPROC_DIR && chmod a+rwx -R /tmp/PROMETHEUS_MULTIPROC_DIR
-
+ENV PROMETHEUS_MULTIPROC_DIR /tmp
+ENV prometheus_multiproc_dir /tmp
 
 ARG PROJECT_ID
 ENV PROJECT_ID ${PROJECT_ID}
@@ -20,4 +19,4 @@ RUN apt-get update && \
     pip install --upgrade pip && \
     pip install -r requirements.txt
 
-CMD ["gunicorn", "-c", "config.py", "--access-logfile", "-", "--error-logfile", "-", "-w", "4", "-b", "0.0.0.0:8080", "app:app"]
+CMD ["gunicorn", "-c", "config.py","--access-logfile", "-", "--error-logfile", "-", "-w", "4", "-b", "0.0.0.0:8080", "app:app"]
