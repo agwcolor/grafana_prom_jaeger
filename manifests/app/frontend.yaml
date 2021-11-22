@@ -24,9 +24,6 @@ spec:
         - name: frontend
           image: agwcolor/monitoring-frontend:latest
           imagePullPolicy: Always
-          env:
-          - name: JAEGER_HOST
-            value: simplest-query.default.svc.cluster.local:16686
           ports:
           - name: frontendport
             containerPort: 8080
@@ -40,7 +37,9 @@ spec:
   selector:
     app: frontend
   ports:
-    - port: 8083
+    - name: frontend
+      protocol: TCP
+      port: 8083
       targetPort: frontendport
   type: LoadBalancer
 ---

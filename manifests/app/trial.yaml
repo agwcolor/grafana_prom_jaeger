@@ -24,9 +24,6 @@ spec:
         - name: trial
           image: agwcolor/monitoring-trial:latest
           imagePullPolicy: Always
-          env:
-          - name: JAEGER_HOST
-            value: simplest-query.default.svc.cluster.local:16686
           ports:
           - name: trialport
             containerPort: 8080
@@ -40,7 +37,9 @@ spec:
   selector:
     app: trial
   ports:
-    - port: 8082
+    - name: trial
+      protocol: TCP
+      port: 8082
       targetPort: trialport
   type: LoadBalancer
 ---

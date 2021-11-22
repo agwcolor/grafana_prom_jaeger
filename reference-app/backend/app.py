@@ -7,16 +7,14 @@ from flask_pymongo import PyMongo
 # Tracing
 from jaeger_client import Config
 from jaeger_client.metrics.prometheus import PrometheusMetricsFactory
-
 from opentelemetry import trace
-
 from opentelemetry.exporter.jaeger.thrift import JaegerExporter
-from opentelemetry.sdk.resources import SERVICE_NAME, Resource
+from opentelemetry.exporter import jaeger
+from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from opentelemetry.instrumentation.flask import FlaskInstrumentor
-
 from opentelemetry.instrumentation.requests import RequestsInstrumentor
-from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.resources import SERVICE_NAME, Resource
 from opentelemetry.sdk.trace.export import ConsoleSpanExporter
 
 # from prometheus_flask_exporter import PrometheusMetrics
@@ -39,7 +37,7 @@ trace.get_tracer_provider().add_span_processor(
 tracer = trace.get_tracer(__name__)
 '''
 
-# Another way to configure a tracer
+# Configure Jaeger tracer
 def init_tracer(service):
     logging.getLogger('').handlers = []
     logging.basicConfig(format='%(message)s', level=logging.DEBUG)
@@ -63,6 +61,8 @@ tracer = init_tracer('backend')
 
 # Backend app
 app = Flask(__name__)
+FlaskInstrumentor().instrument_app(app)
+RequestsInstrumentor().instrument()
 CORS(app)
 
 # FlaskInstrumentor().instrument_app(app, excluded_urls="metrics")
@@ -73,6 +73,13 @@ metrics = GunicornInternalPrometheusMetrics(app, group_by='endpoint')
 
 # static information as metric
 metrics.info('backend', 'Backend App Metrics', version='1.0.3')
+
+# register extra metrics
+metrics.register_default(
+    metrics.counter(
+        'by_path_counter', 'Request count by request paths', labels={'path': lambda: request.path}
+    )
+)
 
 # custom metric to be applied to multiple endpoints
 endpoint_counter = metrics.counter(
@@ -90,24 +97,28 @@ mongo = PyMongo(app)
 def homepage():
     with tracer.start_active_span('home-page'):
         answer = "I'm on the home page"
-    return jsonify(response=answer)
+        return jsonify(response=answer)
 
 
 @app.route('/api')
+@endpoint_counter
 def my_api():
     with tracer.start_span('my-api'):
         answer = "something"
-    return jsonify(response=answer)
+        return jsonify(response=answer)
 
 @app.route('/star', methods=['POST'])
+@endpoint_counter
 def add_star():
-  star = mongo.db.stars
-  name = request.json['name']
-  distance = request.json['distance']
-  star_id = star.insert({'name': name, 'distance': distance})
-  new_star = star.find_one({'_id': star_id })
-  output = {'name' : new_star['name'], 'distance' : new_star['distance']}
-  return jsonify({'result' : output})
+    with tracer.start_span('add star'):
+        star = mongo.db.stars
+        name = request.json['name']
+        distance = request.json['distance']
+        star_id = star.insert({'name': name, 'distance': distance})
+        new_star = star.find_one({'_id': star_id })
+        output = {'name' : new_star['name'], 'distance' : new_star['distance']}
+        return jsonify({'result' : output})
+
 
 if __name__ == "__main__":
     app.run()
