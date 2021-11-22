@@ -75,31 +75,12 @@ endpoint_counter = metrics.counter(
     labels={'endpoint': lambda: request.endpoint}
 )
 
-def init_tracer(service):
-    logging.getLogger('').handlers = []
-    logging.basicConfig(format='%(message)s', level=logging.DEBUG)
-
-    config = Config(
-        config={
-            'sampler': {
-                'type': 'const',
-                'param': 1,
-            },
-            'logging': True,
-        },
-        service_name=service,
-    )
-
-    # this call also sets opentracing.tracer
-    return config.initialize_tracer()
-
-tracer = init_tracer('frontend')
 
 @app.route('/')
 @endpoint_counter
 def homepage():
-    with tracer.start_active_span('front-end-homepage'):
-        span.set_tag('front-end-home-page', 'Welcome to the front end')
+    with tracer.start_span('front-end-homepage') as span:
+        span.set_tag('message', 'Welcome to the front end')
     return render_template("main.html")
 
 

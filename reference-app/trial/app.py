@@ -49,8 +49,7 @@ def init_tracer(service):
 
 tracer = init_tracer('trial')
 
-
-
+# Trial App
 app = Flask(__name__)
 FlaskInstrumentor().instrument_app(app)
 RequestsInstrumentor().instrument()
@@ -84,27 +83,8 @@ metrics.register_default(
 #)
 #tracer = config.initialize_tracer()
 
-def init_tracer(service):
-    logging.getLogger('').handlers = []
-    logging.basicConfig(format='%(message)s', level=logging.DEBUG)
-
-    config = Config(
-        config={
-            'sampler': {
-                'type': 'const',
-                'param': 1,
-            },
-            'logging': True,
-        },
-        service_name=service,
-    )
-
-    # this call also sets opentracing.tracer
-    return config.initialize_tracer()
-
-tracer = init_tracer('trial')
-
 @app.route('/')
+@endpoint_counter
 def homepage():
     # return render_template("main.html")
     with tracer.start_span('get-python-jobs') as span:
