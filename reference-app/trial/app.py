@@ -62,17 +62,17 @@ metrics = GunicornInternalPrometheusMetrics(app, group_by='endpoint')
 # static information as metric
 metrics.info('trial', 'Trial App Metrics', version='1.0.3')
 
-# custom metric to be applied to multiple endpoints
-endpoint_counter = metrics.counter(
-    'by_endpoint_counter', 'Request count by endpoints',
-    labels={'endpoint': lambda: request.endpoint}
-)
-
 # register extra metrics
 metrics.register_default(
     metrics.counter(
         'by_path_counter', 'Request count by request paths', labels={'path': lambda: request.path}
     )
+)
+
+# custom metric to be applied to multiple endpoints
+endpoint_counter = metrics.counter(
+    'by_endpoint_counter', 'Request count by endpoints',
+    labels={'endpoint': lambda: request.endpoint}
 )
 
 #config = Config(
