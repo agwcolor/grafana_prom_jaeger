@@ -90,9 +90,8 @@ Description:  class 'NameError' error  - name 'something' is not defined
 - request time (in ms) for failed requests
 - round trip request time in network - using ping and traceroute
 
-**Errors**
-It is important to understand what kind of errors are happening in the application. This can be done with Jaeger Tracing. 
-- 500 errors - 500 errors are more severe: the application is unable to start or completely crashes during execution of a request. 
+**Errors** : It is important to understand what kind of errors are happening in the application. This can be done with Jaeger Tracing.
+- 500 errors - 500 errors are more severe: the application is unable to start or completely crashes during execution of a request.
 - 400 errors - 404 errors are less severe but also need urgent attention.
 - What percentage of overall requests result in 200 as opposed to 400 or 500 erros
 
@@ -101,7 +100,7 @@ It is important to understand what kind of errors are happening in the applicati
 - % CPU usage available on host
 - Total number of requests recived over time. Are there spikes in usage?
 
-### Example PromQL Queries for Some Metrics. Some metrics I was unable to find queries for (ping and traceroute). Others I could not direct 1 - 1 relationships from KPI => PromQL. 
+### Example PromQL Queries for Some Metrics. Some metrics I was unable to find queries for (ping and traceroute). Others I could not direct 1 - 1 relationships from KPI => PromQL.
 
 **Response types : Flask HTTP requests status 200, 500, 400**
 - sum(flask_http_request_total{container=~"backend|frontend|trial",status=~"500"}) by (status,container)
