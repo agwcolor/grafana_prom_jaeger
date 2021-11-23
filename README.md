@@ -2,7 +2,7 @@
 
 ## Verify the monitoring installation
 
-*TODO: 1* run `kubectl` command to show the running pods and services for all components. Take a screenshot of the output and include it here to verify the installation (see : ![default ns](/answer-img/1a_pods_services_default_ns.png) | ![monitoring ns](/answer-img/1b_pods_services_monitoring_ns.png)
+*TODO: 1* run `kubectl` command to show the running pods and services for all components. Take a screenshot of the output and include it here to verify the installation.  NOTE: As instructed by serveral Knowledgebase posts, I put all of the Jaeger services into the default namespace along with the apps themselves. Otherwise Jaeger cannot see the apps.  That is why Jaeger is not in Observability.  (see : ![default ns](/answer-img/1_PodsServices_Note_JaegerInDefault.png) I tried to put Jaeger in observability but it could not see the apps. No other solution to this issue was posted in Knowledge that I could find.
 
 ## Setup the Jaeger and Prometheus source
 *TODO: Expose Grafana to the internet and then setup Prometheus as a data source. Provide a screenshot of the home page after logging into Grafana. ![grafana prom datasource](/answer-img/2a_grafana_prometheus_datasource.png) | ![grafana home page](/answer-img/2b_grafana_home_screen.png) 
@@ -33,7 +33,7 @@ The following general SLIs can have a bearing on whether the SLOs will be met di
 - Average Response time (Latency)
 
 ## Create a Dashboard to measure our SLIs
-*TODO:* Create a dashboard to measure the uptime of the frontend and backend services We will also want to measure to measure 40x and 50x errors. Create a dashboard that show these values over a 24 hour period and take a screenshot. (![400 & 500 errors](/answer-img/4_Uptime_4xx_5xx_errors_24h.png))
+*TODO:* Create a dashboard to measure the uptime of the frontend and backend services We will also want to measure to measure 40x and 50x errors. Create a dashboard that show these values over a 24 hour period and take a screenshot. (![400 & 500 errors](/answer-img/4_Uptime_4xx_5xx_errors_V2.png))
 
 ## Tracing our Flask App
 *TODO:*  We will create a Jaeger span to measure the processes on the backend. Once you fill in the span, provide a screenshot of it here.
@@ -44,21 +44,23 @@ The following general SLIs can have a bearing on whether the SLOs will be met di
 
 
 ## Report Error
-*TODO:* Using the template below, write a trouble ticket for the developers, to explain the errors that you are seeing (400, 500, latency) and to let them know the file that is causing the issue.
+*TODO:* Using the template below, write a trouble ticket for the developers, to explain the errors that you are seeing (400, 500, latency) and to let them know the file that is causing the issue. (![jaeger in grafana](/answer-img/6b_TroubleTicketTrace.png))
+
 
 TROUBLE TICKET
 
-Name: 400 Errors & 500 Errors
+Name: 500 Error on backend/app/app.py
 
-Date: 11/22/2021
+Date: November 23 2021, 13:24:50
 
-Subject: Errors in Backend App & Trial App
+Subject: 500 Error in my-api endpoint, failed to resolve
 
-Affected Area: Backend App.py "/star" endpoint & Trial App.py "/" root endpoint
+Affected Area: File "/app/app.py", line 107, in my_api
+    answer = something # This will create an error
 
 Severity: Severe
 
-Description:  Errors in Backend App (405 error, method not allowed /star endpoint) & Trial App (500 error, / , main route)
+Description:  class 'NameError' error  - name 'something' is not defined
 
 
 ## Creating SLIs and SLOs
