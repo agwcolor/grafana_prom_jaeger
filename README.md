@@ -27,10 +27,11 @@ The following general SLIs can have a bearing on whether the SLOs will be met di
 *TODO:* It is important to know why we want to measure certain metrics for our customer. Describe in detail 5 metrics to measure these SLIs.
 
 **4 Golden Signals to measure service level** 
-Latency — request time (in ms)
-Traffic — how stressed is the system (based on no of HTTP requests/sec)
-Errors — how many failed HTTP responses are there? 4xx & 5xx errors.
-Saturation — is too much memory or CPI being used compared to the the overall capacity of a service or its configuration?
+
+*Latency* — request time (in ms)
+*Traffic* — how stressed is the system (based on no of HTTP requests/sec)
+*Errors* — how many failed HTTP responses are there? 4xx & 5xx errors.
+*Saturation* — is too much memory or CPI being used compared to the the overall capacity of a service or its configuration?
 
 ** SLIs to measure the 4 Golden Signals. These SLIs can overlap in terms of what signals are affecting them. To determine what is affecting an SLI, further research into tracing on the apps will need to be done, as well as analyzing dependencies in the cluster and its environment. They are all interdependent.
 - Measure by response type and service: Flask HTTP requests status 200, 500, 400 (Errors)
