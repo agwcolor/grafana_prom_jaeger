@@ -25,12 +25,20 @@ The following general SLIs can have a bearing on whether the SLOs will be met di
 
 ## Creating SLI (KPI) metrics.
 *TODO:* It is important to know why we want to measure certain metrics for our customer. Describe in detail 5 metrics to measure these SLIs.
-- Response types: Flask HTTP requests status 200, 500, 400
-- Failed responses per second
-- Uptime: frontend, trial, backend
-- Pods health: Pods not ready
-- Pods health: Pod restarts by namespace
-- Average Response time (Latency)
+
+**4 Golden Signals to measure service level** 
+Latency — request time (in ms)
+Traffic — how stressed is the system (based on no of HTTP requests/sec)
+Errors — how many failed HTTP responses are there? 4xx & 5xx errors.
+Saturation — is too much memory or CPI being used compared to the the overall capacity of a service or its configuration?
+
+** SLIs to measure the 4 Golden Signals. These SLIs can overlap in terms of what signals are affecting them. To determine what is affecting an SLI, further research into tracing on the apps will need to be done, as well as analyzing dependencies in the cluster and its environment. They are all interdependent.
+- Measure by response type and service: Flask HTTP requests status 200, 500, 400 (Errors)
+- Failed responses per second (Errors, Traffic, Saturation)
+- Uptime: frontend, trial, backend (Latency, Traffic, Saturation, Errors)
+- Pods health: Pods not ready (Latency / Errors)
+- Pods health: Pod restarts by namespace (Could be caused by any number of things : Errors in applications, traffic)
+- Average Response time (Latency, Traffic, Saturation)
 
 ## Create a Dashboard to measure our SLIs
 *TODO:* Create a dashboard to measure the uptime of the frontend and backend services We will also want to measure to measure 40x and 50x errors. Create a dashboard that show these values over a 24 hour period and take a screenshot. (![400 & 500 errors](/answer-img/4_Uptime_4xx_5xx_errors_V2.png))
@@ -65,15 +73,31 @@ Description:  class 'NameError' error  - name 'something' is not defined
 
 ## Creating SLIs and SLOs
 *TODO:* We want to create an SLO guaranteeing that our application has a 99.95% uptime per month. Name three SLIs that you would use to measure the success of this SLO.
-1. Uptime for each service
-2. Response types - 200,4xx,5xx
-3. Pod health
+1. Latency
+2. Errors
+3. Saturation
 
 
 ## Building KPIs for our plan
 
 *TODO*: Now that we have our SLIs and SLOs, create KPIs to accurately measure these metrics. We will make a dashboard for this, but first write them down here:
 
+2-3 KPIs per SLI
+**Latency**
+    - request time (in ms) for successful requests
+    - request time (in ms) for failed requests
+    - round trip request time in network - using ping and traceroutes
+**Errors**
+    It is important to understand what kind of errors are happening in the application. This can be done with Jaeger Tracing. 
+    — 500 errors - 500 errors are more severe: the application is unable to start or completely crashes during execution of a request. 
+    - 400 errors - 404 errors are less severe but also need urgent attention.
+    - What percentage of overall requests result in 200 as opposed to 400 or 500 erros
+**Saturation**
+    — % CPU usage allocated per service as configured in yaml for example
+    - % CPU usage available on host
+    - Total number of requests recived over time. Are there spikes in usage?
+
+### Example PromQL Queries for Some Metrics. Some metrics I was unable to find queries for (ping and traceroute). Others I could not direct 1 - 1 relationships from KPI => PromQL. 
 Response types app health:
 **Response types : Flask HTTP requests status 200, 500, 400**
 - sum(flask_http_request_total{container=~"backend|frontend|trial",status=~"500"}) by (status,container)
