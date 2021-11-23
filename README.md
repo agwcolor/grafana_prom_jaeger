@@ -2,7 +2,7 @@
 
 ## Verify the monitoring installation
 
-*TODO: 1* run `kubectl` command to show the running pods and services for all components. Take a screenshot of the output and include it here to verify the installation.  NOTE: As instructed by serveral Knowledgebase posts, I put all of the Jaeger services into the default namespace along with the apps themselves. Otherwise Jaeger cannot see the apps.  That is why Jaeger is not in Observability.  (see : ![default ns](/answer-img/1_PodsServices_Note_JaegerInDefault.png) I tried to put Jaeger in observability but it could not see the apps. No other solution to this issue was posted in Knowledge that I could find.
+*TODO: 1* run `kubectl` command to show the running pods and services for all components. Take a screenshot of the output and include it here to verify the installation.  NOTE: As instructed by serveral Knowledgebase posts, I put all of the Jaeger services into the `default` namespace along with the apps themselves. Otherwise Jaeger cannot see the apps.  That is why Jaeger is not in Observability.  (see : ![default ns](/answer-img/1_PodsServices_Note_JaegerInDefault.png)
 
 ## Setup the Jaeger and Prometheus source
 *TODO: Expose Grafana to the internet and then setup Prometheus as a data source. Provide a screenshot of the home page after logging into Grafana. ![grafana prom datasource](/answer-img/2a_grafana_prometheus_datasource.png) | ![grafana home page](/answer-img/2b_grafana_home_screen.png) 
