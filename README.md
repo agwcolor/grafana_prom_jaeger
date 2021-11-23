@@ -88,6 +88,7 @@ Response types app health:
 
 **Pods health : Pods not ready**
 - sum by (namespace) (kube_pod_status_ready{condition="false"})
+
 **Pods health : Pod restarts by namespace**
 - sum by (namespace)(changes(kube_pod_status_ready{condition="true"}[5m]))
 
